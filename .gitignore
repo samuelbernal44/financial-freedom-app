@@ -1,0 +1,25 @@
+# .gitignore
+
+# Entornos virtuales de Python
+venv/
+ENV/
+env/
+.venv/
+
+# Archivos compilados de Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variables de entorno (Contienen contraseñas o llaves secretas)
+.env
+.env.*
+
+# Configuraciones específicas de VS Code
+.vscode/
+*.code-workspace
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
