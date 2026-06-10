@@ -23,3 +23,7 @@ env/
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+
+# Bases de datos locales
+*.db
+*.sqlite3
