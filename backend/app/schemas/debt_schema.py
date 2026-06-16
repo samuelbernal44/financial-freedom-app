@@ -1,6 +1,7 @@
 # backend/app/schemas/debt_schema.py
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
+from typing import Optional
 
 # Esquema Base: Define los campos comunes que comparten la creación y la lectura
 
@@ -44,3 +45,25 @@ class DebtResponse(DebtBase):
     class Config:
         # Permite que Pydantic lea modelos de bases de datos ORM (como SQLAlchemy) directamente
         from_attributes = True
+
+# NUEVO SCHEMA PARA ACTUALIZACIÓN
+
+
+class DebtUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    total_amount: Optional[float] = Field(None, gt=0)
+    interest_rate: Optional[float] = Field(None, ge=0)
+    pacted_months: Optional[int] = Field(None, gt=0)
+    acquisition_date: Optional[str] = Field(None)
+
+    @field_validator('acquisition_date')
+    @classmethod
+    def validate_date_format(cls, value: Optional[str]) -> Optional[str]:
+        if value is not None:
+            try:
+                datetime.strptime(value, "%Y-%m-%d")
+                return value
+            except ValueError:
+                raise ValueError(
+                    "La fecha debe tener el formato estricto YYYY-MM-DD")
+        return value

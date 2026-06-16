@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.database import get_db
 from backend.app.crud.crud_debt import crud_debt
-from backend.app.schemas.debt_schema import DebtCreate, DebtResponse
+from backend.app.schemas.debt_schema import DebtCreate, DebtResponse, DebtUpdate
+
 
 router = APIRouter()
 
@@ -35,6 +36,25 @@ def read_debt(debt_id: int, db: Session = Depends(get_db)):
     if not db_debt:
         raise HTTPException(status_code=404, detail="Deuda no encontrada")
     return db_debt
+
+
+@router.patch("/{debt_id}", response_model=DebtResponse)
+def update_debt(debt_id: int, debt_in: DebtUpdate, db: Session = Depends(get_db)):
+    """
+    Actualiza parcialmente los datos de una deudda existente.
+    """
+    # 1. Verificar si la deuda existe en la base de datos
+    db_debt = crud_debt.get_by_id(db=db, debt_id=debt_id)
+    if not db_debt:
+        raise HTTPException(status_code=404, detail="Deuda no encontrada")
+
+    # 2. Extraer solo los campos que el usuario envió en el JSON (ignora los None)
+    update_data = debt_in.model_dump(exclude_unset=True)
+
+    # 3. Llamar al CRUD para guardar los cambios
+    updated_debt = crud_debt.update(
+        db=db, db_debt=db_debt, update_data=update_data)
+    return updated_debt
 
 
 @router.delete("/{debt_id}", status_code=status.HTTP_204_NO_CONTENT)
